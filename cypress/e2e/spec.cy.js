@@ -68,4 +68,68 @@ describe('TODOMvc App', () => {
       .children()
       .should('have.length', 2);
   });
+
+  it('Marca e desmarca uma tarefa como concluída', () => {
+    cy.visit('');
+
+    cy.get('[data-cy=todo-input]')
+      .type('Estudar Cypress{enter}');
+
+    cy.get('[data-cy=todos-list] > li')
+      .should('have.length', 1);
+
+    cy.get('[data-cy=toggle-todo-checkbox]')
+      .check()
+      .should('be.checked');
+
+    cy.get('[data-cy=toggle-todo-checkbox]')
+      .uncheck()
+      .should('not.be.checked');
+  });
+
+  it('Atualiza corretamente o contador de tarefas restantes', () => {
+    cy.visit('');
+  
+    cy.get('.new-todo')
+      .type('Tarefa 1{enter}')
+      .type('Tarefa 2{enter}')
+      .type('Tarefa 3{enter}');
+  
+    cy.get('.todo-count')
+      .should('contain.text', '3');
+  
+    cy.get('.todo-list li .toggle')
+      .first()
+      .check();
+  
+    cy.get('.todo-count')
+      .should('contain.text', '2');
+  });
+
+  it('Remove todas as tarefas concluídas com o botão "Clear completed"', () => {
+    cy.visit('');
+  
+    cy.get('.new-todo')
+      .type('Comprar pão{enter}')
+      .type('Estudar testes{enter}')
+      .type('Lavar o carro{enter}');
+  
+    cy.get('.todo-list li .toggle')
+      .eq(0).check();
+    cy.get('.todo-list li .toggle')
+      .eq(1).check();
+  
+    cy.get('.clear-completed')
+      .should('be.visible')
+      .click();
+  
+    cy.get('.todo-list li')
+      .should('have.length', 1)
+      .first()
+      .find('label')
+      .should('have.text', 'Lavar o carro');
+  
+    cy.get('.todo-count')
+      .should('contain.text', '1');
+  });
 });
